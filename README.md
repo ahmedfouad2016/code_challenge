@@ -1,6 +1,5 @@
-# Project Title
+# Code Challange
 
-Code Challange
 
 ## Getting Started
 
@@ -28,28 +27,30 @@ Note: you will need to change configuration in ./src/config/index.js to be suita
 
 ## Running the tests
 
-The test implemented with jasmine , to run test 
+The test implemented with jasmine, you will find the test in spec folder
+To run the test 
 
 ```
 npm test
 ```
 
-### 
 
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-### Project structure
+### Project Configuration
 
 ```
--src
-|
---controllers
---models
---routes
---views
+// server Config
+const SERVER_PORT = 3000;
+
+
+// Mysql config
+const MYSQL_DATABASE = 'your_db_name';
+const MYSQL_USER='your_user';
+const MYSQL_PASSWORD='your_password';
+const MYSQL_PORT = 8889;
+const MYSQL_HOST='localhost';
+
 ```
+### Database 
+You will find the database in  ./database/database.sql 
+Note: you don't need to import the database file , all you need to create database for project . the schema and data will auto genrated when server start
 
