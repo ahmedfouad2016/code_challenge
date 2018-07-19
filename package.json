@@ -1,0 +1,33 @@
+{
+  "name": "wimo",
+  "version": "1.0.0",
+  "description": "wimo code challenge",
+  "main": "index.js",
+  "scripts": {
+    "test": "babel-node spec/run.js",
+    "start": "nodemon  ./index.js --exec babel-node -e js"
+  },
+  "keywords": [
+    "nodejs",
+    "reactjs",
+    "mysql"
+  ],
+  "author": "ahmed fouad",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.4",
+    "express": "^4.16.3",
+    "helmet": "^3.12.1",
+    "mysql2": "^1.5.3",
+    "request": "^2.87.0",
+    "sequelize": "^4.38.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "jasmine": "^3.1.0",
+    "nodemon": "^1.18.3"
+  }
+}

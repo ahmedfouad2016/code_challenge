@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Wimo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B"
+    crossorigin="anonymous">
+
+</head>
+<body>
+
+    <div class="container_fluid">
+        <div id="app_container"></div>
+    </div>
+
+
+<script src="http://momentjs.com/downloads/moment.js"></script>
+<script src="https://unpkg.com/react@16/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+<script src="https://unpkg.com/react-router/umd/react-router.min.js"></script>
+<script src="https://unpkg.com/react-router-dom/umd/react-router-dom.min.js"></script>
+
+<script type="text/babel"> 
+    const Router = window.ReactRouterDOM.BrowserRouter;
+    const Route =  window.ReactRouterDOM.Route;
+    const Link =  window.ReactRouterDOM.Link;
+    const Prompt =  window.ReactRouterDOM.Prompt;
+    const Switch = window.ReactRouterDOM.Switch;
+    const Redirect = window.ReactRouterDOM.Redirect;
+
+    class Tasks extends React.Component {
+        constructor(props){
+            super(props);
+
+            this.state = {
+                PageTilte: 'Tasks',
+                tasks:[],
+            }
+        }
+
+        componentDidMount(){
+            fetch('/tasks').then(response => response.json()).then((response)=>{
+                this.setState({
+                    tasks:response,
+                })
+            })
+        }
+
+        tableHeader(){}
+
+        render(){
+            return(
+                <div>
+                <br />
+                <br />
+                    <h2> {this.state.PageTilte}</h2>
+                <br />
+                <br />
+                <table class="table table-striped ">
+                    <thead>
+                        <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Location From</th>
+                        <th scope="col">Location To</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Start at</th>
+                        <th scope="col">Finished at</th>
+                        <th scope="col">Delivery Date</th>
+                        <th scope="col">Driver Name</th>
+                        <th scope="col">Courier Name</th>
+                        <th scope="col">status</th>
+                        <th scope="col">Driver Comment</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {this.state.tasks.map((item,index)=>(
+                            <tr>
+                                <th scope="row">{item.id}</th>
+                                <td>{item.fromLocation}</td>
+                                <td>{item.toLocation}</td>
+                                <td>{item.description}</td>
+                                <td>{moment(item.startAt).format('DD/MM/YYYY h:mm a')}</td>
+                                <td>{moment(item.finishedAt).format('DD/MM/YYYY h:mm a')}</td>
+                                <td>{moment(item.deliveryDate).format('DD/MM/YYYY h:mm a')}</td>
+                                <td>{item.Driver.name}</td>
+                                <td>{item.Courier.name}</td>
+                                <td>{item.status}</td>
+                                <td>{item.driverComment}</td>
+                                <td>
+                                    <Link to={{ pathname: '/tasks/details', state: { task:item } }}
+                                     className="btn btn-primary active" role="button" aria-pressed="true">
+                                        Edit
+                                    </Link>
+                                </td>
+                                
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+                </div>
+            );
+        }
+    }
+
+    class TasksDetails extends React.Component {
+        constructor(props){
+            super(props);
+            
+            const {task} = props.location.state;
+
+            this.state = {
+                task,
+                isPending: task.status == 'pending' ? true : false,
+            };
+            this.updateStatus = this.updateStatus.bind(this);
+        }
+
+        updateStatus(event){
+            let status = event.currentTarget.dataset.value;           
+             fetch(`/tasks/${this.state.task.id}`,{
+                method: 'PUT',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({status})
+             })
+                .then(response => response.json())
+                .then((response)=>{
+                    if(response.length > 0){
+                        let task = this.state.task;
+                        task['status'] = status;
+                        this.setState({
+                            task,
+                            isPending:false
+                        });    
+                    }                      
+            });
+        }
+
+        render(){
+            const {task} = this.state;
+            return (
+                <div class="card" >
+                <div class="card-header">
+                    Task
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item" >#{task.id}</li>
+                    <li class="list-group-item">Location From : {task.fromLocation}</li>
+                    <li class="list-group-item">Location To : {task.toLocation}</li>
+                    <li class="list-group-item">Description :  {task.description}</li>
+                    <li class="list-group-item">Start at :  { moment(task.startAt).format('DD/MM/YYYY h:mm a')}</li>
+                    <li class="list-group-item">Finished at :  {moment(task.finishedAt).format('DD/MM/YYYY h:mm a')}</li>
+                    <li class="list-group-item">Delivery Date :  {moment(task.deliveryDate).format('DD/MM/YYYY h:mm a')}</li>
+                    <li class="list-group-item"> Driver Name : {task.Driver.name}</li>
+                    <li class="list-group-item">Courier Name : {task.Courier.name}</li>
+                    {!this.state.isPending && 
+                    <li class="list-group-item">
+                        Status :  {task.status}
+                    </li>
+                    }
+                    {this.state.isPending && 
+                    <li class="list-group-item">
+                        <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Status : {task.status}
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a onClick={this.updateStatus} data-value="completed" class="dropdown-item" href="#">Completed</a>
+                            <a onClick={this.updateStatus} data-value="failed" class="dropdown-item" href="#">Failed</a>
+                        </div>
+                        </div>
+                    </li>
+                    }
+                    <li class="list-group-item">Driver Comment : {task.driverComment}</li>
+                </ul>
+                </div>
+            );
+        }
+    }
+
+    const domContainer = document.querySelector('#app_container');
+    ReactDOM.render(
+        <Router>
+            <div>
+                <Route exact path="/" component={Tasks} />
+                <Route  path="/tasks/details" component={TasksDetails}  />
+            </div>
+        </Router>, domContainer);
+</script>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+    crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em"
+    crossorigin="anonymous"></script>
+</body>
+</html>
