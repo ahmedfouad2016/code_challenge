@@ -51,6 +51,8 @@ const MYSQL_HOST='localhost';
 
 ```
 ### Database 
-You will find the database in  ./database/database.sql 
-Note: you don't need to import the database file , all you need to create database for project . the schema and data will auto genrated when server start
+You will find the database in  ./database/database.sql.
+
+Note: you don't need to import the database file , all you need to create database for project.
+the schema and data will auto genrated when server start
 
